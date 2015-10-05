@@ -6,10 +6,16 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var io = require('socket.io');
 var http = require('http');
+var livereload = require('express-livereload');
 
 var routes = require('./routes/index');
 
 var app = express();
+
+//should be only in dev mode?
+livereload(app, {
+  watchDir: process.cwd() + "/public"
+});
 
 var server = http.createServer(app);
 

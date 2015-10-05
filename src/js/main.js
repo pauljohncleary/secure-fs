@@ -20,7 +20,7 @@ var webrtc = new simpleWebRTC({
 //url will contain the remote peer id, e.g https://senditdirect.com/sadf3r3
 var remotePeerId = window.location.pathname.substr(1);
 console.log(remotePeerId);
-webrtc.joinRoom('sharingIdFromUrl');
+webrtc.joinRoom('sharingggIdFhgfromUrl');
 
 // called when a peer is created
 webrtc.on('createdPeer', function (peer) {
