@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "js": "browserify ./src/js/main.js | uglifyjs > ./public/js/bundle.js",
+    "js": "browserify ./src/js/*.js | uglifyjs > ./public/js/bundle.js",
     "css": "cat ./src/css/* | cleancss -o   ./public/css/bundle.css",
     "build": "npm run js & npm run css",
     "watch-css": "nodemon --ext styl --watch ./src/css --exec 'npm run css'",
@@ -15,12 +15,12 @@
     "body-parser": "~1.13.2",
     "cookie-parser": "~1.3.5",
     "debug": "~2.2.0",
-    "easyrtc": "1.0.x",
     "express": "~4.13.1",
     "jade": "~1.11.0",
     "jquery": "^2.1.4",
     "morgan": "~1.6.1",
     "serve-favicon": "~2.3.0",
+    "simplewebrtc": "^1.19.1",
     "socket.io": "0.9.x"
   },
   "description": "Secure File Sending",

@@ -4,7 +4,6 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var easyrtc = require("easyrtc");
 var io = require('socket.io');
 var http = require('http');
 
@@ -16,9 +15,6 @@ var server = http.createServer(app);
 
 // Start Socket.io so it attaches itself to Express server
 var socketServer = io.listen(server, {'log level':1});
-
-// Start EasyRTC server
-var rtc = easyrtc.listen(app, socketServer);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
