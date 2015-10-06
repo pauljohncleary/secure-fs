@@ -1,14 +1,18 @@
 var $ = require('jquery');
 var simpleWebRTC = require('simplewebrtc');
+import React from 'react';
+import { store  } from './store';
+import { ConnectionStatus } from './components/connectionStatus';
+
 global.jQuery = global.$ = $;
 
+React.render(<ConnectionStatus />, document.getElementById('remotes'));
+
+//set things up for data transfers
 var webrtc = new simpleWebRTC({
-    // we don't do video
     localVideoEl: '',
     remoteVideosEl: '',
-    // dont ask for camera access
     autoRequestMedia: false,
-    // dont negotiate media
     receiveMedia: {
         mandatory: {
             offerToReceiveAudio: false,
@@ -17,14 +21,18 @@ var webrtc = new simpleWebRTC({
     }
 });
 
-//url will contain the remote peer id, e.g https://senditdirect.com/sadf3r3
-var remotePeerId = window.location.pathname.substr(1);
-console.log(remotePeerId);
-webrtc.joinRoom('sharingggIdFhgfromUrl');
+//subscribe to the the peer connection status
+store.subscribe(() =>
+  console.log('peer: ', store.getState())
+);
+
+//url will contain the room name, e.g https://senditdirect.com/sadf3r3
+var roomName = window.location.pathname.substr(1);
+webrtc.joinRoom(roomName);
 
 // called when a peer is created
 webrtc.on('createdPeer', function (peer) {
-    console.log('peer connected', peer);
+  store.dispatch({ type: 'CONNECTED' });
 
   // receiving an incoming filetransfer
   peer.on('fileTransfer', function (metadata, receiver) {
@@ -50,10 +58,33 @@ webrtc.on('createdPeer', function (peer) {
       var sender = peer.sendFile(file);
   });
 
+  //monitor if the peer has connected or not
+  peer.pc.on('iceConnectionStateChange', function (event) {
+    switch (peer.pc.iceConnectionState) {
+    case 'checking':
+        store.dispatch({ type: 'CONNECTING' });
+        break;
+    case 'connected':
+        store.dispatch({ type: 'CONNECTED' });
+        break;
+    case 'completed': // on caller side
+        store.dispatch({ type: 'CONNECTED' });
+        break;
+    case 'disconnected':
+        store.dispatch({ type: 'DISCONNECTED' });
+        break;
+    case 'failed':
+        store.dispatch({ type: 'DISCONNECTED' });
+        break;
+    case 'closed':
+        store.dispatch({ type: 'DISCONNECTED' });
+        break;
+    }
+  });
 
 });
 
-// select a file
+//setup the input file box
 var fileinput = document.createElement('input');
 fileinput.type = 'file';
 document.getElementById('remotes').appendChild(fileinput);
