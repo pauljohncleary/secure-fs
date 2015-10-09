@@ -4,11 +4,12 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "js": "browserify ./src/js/*.js -t babelify | uglifyjs > ./public/js/bundle.js",
+    "js-dev": "browserify ./src/js/*.js -d -t babelify > ./public/js/bundle.js",
+    "js-prod": "browserify ./src/js/*.js -t babelify | uglifyjs > ./public/js/bundle.js",
     "css": "cat ./src/css/* | cleancss -o   ./public/css/bundle.css",
-    "build": "npm run js & npm run css",
+    "build-prod": "npm run js-prod & npm run css",
     "watch-css": "nodemon --ext styl --watch ./src/css --exec 'npm run css'",
-    "watch-js": "nodemon --ext js --watch ./src/js --exec 'npm run js'",
+    "watch-js": "nodemon --ext js --watch ./src/js --exec 'npm run js-dev'",
     "watch": "npm run watch-js & npm run watch-css & npm start"
   },
   "dependencies": {
