@@ -1,21 +1,27 @@
 var $ = require('jquery');
 var simpleWebRTC = require('simplewebrtc');
-import React from 'react';
-import { store  } from './store';
-import { Provider } from 'react-redux';
-import View from './view';
+var React = require('react');
+var store = require('./store');
+var Provider = require('react-redux').Provider;
+var View = require('./view.jsx');
 
 global.jQuery = global.$ = $;
 
 let rootElement = document.getElementById('remotes');
-React.render(
+/*React.render(
   // The child must be wrapped in a function
   // to work around an issue in React 0.13.
   <Provider store={store}>
     {() => <View />}
   </Provider>,
   rootElement
+);*/
+
+React.render(
+  <View />,
+  rootElement
 );
+
 
 //set things up for data transfers
 var webrtc = new simpleWebRTC({

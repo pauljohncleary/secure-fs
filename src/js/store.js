@@ -1,4 +1,4 @@
-import { createStore } from 'redux';
+var createStore = require('redux').createStore;
 
 /**
  * This is a reducer, a pure function with (state, action) => state signature.
@@ -22,4 +22,4 @@ function peerConnectionStatus(state = false, action) {
 // Create a Redux store holding the state of your app.
 // Its API is { subscribe, dispatch, getState }.
 let store = createStore(peerConnectionStatus);
-export { store };
+module.exports = store;

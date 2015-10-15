@@ -12,9 +12,9 @@ var routes = require('./routes/index');
 
 var app = express();
 
-//should be only in dev mode?
+//should be only in dev mode??
 livereload(app, {
-  watchDir: process.cwd() + "/public"
+  watchDir: process.cwd() + "/public/"
 });
 
 var server = http.createServer(app);
