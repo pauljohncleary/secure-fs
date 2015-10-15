@@ -5,15 +5,12 @@ var createStore = require('redux').createStore;
  * It describes how an action transforms the state into the next state.
  */
 
- //Only one peer is ever allowed to join the room
 function store(state = false, action) {
   switch (action.type) {
-  case 'CONNECTED':
-    return 'Connected';
-  case 'DISCONNECTED':
-    return 'Disconnected';
-  case 'CONNECTING':
-    return 'Connecting...';
+  case 'PEERCONNECTIONSTATUS':
+    return Object.assign({}, state, {
+      connectionStatus: action.status
+    });
   default:
     return state;
   }

@@ -1,11 +1,18 @@
-var $ = require('jquery');
+/* NEXT STEPS:
+- use react router (or something else) to split into /send and /#hash (recieve) routes
+- abstract webrtc stuff into it's own file
+- fix up the UI
+- restrict to max two peers in a room
+- encrypt files
+*/
+
+var jquery = require('jquery');
+global.$ = jquery;
 var simpleWebRTC = require('simplewebrtc');
 var React = require('react');
 var store = require('./store');
 var Provider = require('react-redux').Provider;
 var View = require('./view.jsx');
-
-global.jQuery = global.$ = $;
 
 let rootElement = document.getElementById('remotes');
 React.render(
@@ -17,7 +24,7 @@ React.render(
 );
 
 
-//set things up for data transfers
+//configure webrtc for data transfers
 var webrtc = new simpleWebRTC({
     localVideoEl: '',
     remoteVideosEl: '',
@@ -33,7 +40,10 @@ var webrtc = new simpleWebRTC({
 //subscribe to the the peer connection status
 //store.subscribe(() => console.log('peer: ', store.getState()) );
 
-store.dispatch({ type: 'CONNECTING' });
+store.dispatch({
+  type: 'PEERCONNECTIONSTATUS',
+  status: 'Waiting for the other person to connect...'
+});
 
 
 //url will contain the room name, e.g https://senditdirect.com/sadf3r3
@@ -42,7 +52,10 @@ webrtc.joinRoom(roomName);
 
 // called when a peer is created
 webrtc.on('createdPeer', function (peer) {
-  store.dispatch({ type: 'CONNECTED' });
+  store.dispatch({
+    type: 'PEERCONNECTIONSTATUS',
+    status: 'Connected'
+  });
 
   // receiving an incoming filetransfer
   peer.on('fileTransfer', function (metadata, receiver) {
@@ -61,10 +74,15 @@ webrtc.on('createdPeer', function (peer) {
   });
 
   // send a file
-  fileinput.addEventListener('change', function() {
-      fileinput.disabled = true;
+  var fileInput = document.getElementById('fileInput');
+  fileInput.addEventListener('change', function() {
+      fileInput.disabled = true;
+      store.dispatch({
+        type: 'PEERCONNECTIONSTATUS',
+        status: 'File uploading...'
+      });
 
-      var file = fileinput.files[0];
+      var file = fileInput.files[0];
       var sender = peer.sendFile(file);
   });
 
@@ -72,29 +90,27 @@ webrtc.on('createdPeer', function (peer) {
   peer.pc.on('iceConnectionStateChange', function (event) {
     switch (peer.pc.iceConnectionState) {
     case 'checking':
-        store.dispatch({ type: 'CONNECTING' });
-        break;
+      store.dispatch({
+        type: 'PEERCONNECTIONSTATUS',
+        status: 'Connecting...'
+      });
+      break;
     case 'connected':
-        store.dispatch({ type: 'CONNECTED' });
-        break;
     case 'completed': // on caller side
-        store.dispatch({ type: 'CONNECTED' });
-        break;
+      store.dispatch({
+        type: 'PEERCONNECTIONSTATUS',
+        status: 'Connected'
+      });
+      break;
     case 'disconnected':
-        store.dispatch({ type: 'DISCONNECTED' });
-        break;
     case 'failed':
-        store.dispatch({ type: 'DISCONNECTED' });
-        break;
     case 'closed':
-        store.dispatch({ type: 'DISCONNECTED' });
-        break;
+      store.dispatch({
+        type: 'PEERCONNECTIONSTATUS',
+        status: 'Waiting for the other person to connect...'
+      });
+      break;
     }
   });
 
 });
-
-//setup the input file box
-var fileinput = document.createElement('input');
-fileinput.type = 'file';
-document.getElementById('remotes').appendChild(fileinput);
