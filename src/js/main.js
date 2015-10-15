@@ -8,17 +8,11 @@ var View = require('./view.jsx');
 global.jQuery = global.$ = $;
 
 let rootElement = document.getElementById('remotes');
-/*React.render(
-  // The child must be wrapped in a function
-  // to work around an issue in React 0.13.
+React.render(
+  // bind to redux
   <Provider store={store}>
     {() => <View />}
   </Provider>,
-  rootElement
-);*/
-
-React.render(
-  <View />,
   rootElement
 );
 
@@ -37,9 +31,10 @@ var webrtc = new simpleWebRTC({
 });
 
 //subscribe to the the peer connection status
-store.subscribe(() =>
-  console.log('peer: ', store.getState())
-);
+//store.subscribe(() => console.log('peer: ', store.getState()) );
+
+store.dispatch({ type: 'CONNECTING' });
+
 
 //url will contain the room name, e.g https://senditdirect.com/sadf3r3
 var roomName = window.location.pathname.substr(1);

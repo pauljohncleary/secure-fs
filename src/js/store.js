@@ -6,14 +6,14 @@ var createStore = require('redux').createStore;
  */
 
  //Only one peer is ever allowed to join the room
-function peerConnectionStatus(state = false, action) {
+function store(state = false, action) {
   switch (action.type) {
   case 'CONNECTED':
-    return true;
+    return 'Connected';
   case 'DISCONNECTED':
-    return false;
+    return 'Disconnected';
   case 'CONNECTING':
-    return 'CONNECTING';
+    return 'Connecting...';
   default:
     return state;
   }
@@ -21,5 +21,4 @@ function peerConnectionStatus(state = false, action) {
 
 // Create a Redux store holding the state of your app.
 // Its API is { subscribe, dispatch, getState }.
-let store = createStore(peerConnectionStatus);
-module.exports = store;
+module.exports = createStore(store);
