@@ -9,20 +9,30 @@
 var jquery = require('jquery');
 global.$ = jquery;
 var simpleWebRTC = require('simplewebrtc');
+
 var React = require('react');
-var store = require('./store');
 var Provider = require('react-redux').Provider;
-var View = require('./view.jsx');
+import { DevTools, DebugPanel, LogMonitor } from 'redux-devtools/lib/react';
+
+var store = require('./store');
+var App = require('./app.jsx');
 
 let rootElement = document.getElementById('remotes');
 React.render(
-  // bind to redux
-  <Provider store={store}>
-    {() => <View />}
-  </Provider>,
+  <div>
+    <Provider store={store}>
+      {() => <App />}
+    </Provider>
+    <DebugPanel top right bottom>
+      <DevTools store={store} monitor={LogMonitor} />
+    </DebugPanel>
+  </div>,
   rootElement
 );
 
+/**********
+WEBRTC CODE BELOW
+************/
 
 //configure webrtc for data transfers
 var webrtc = new simpleWebRTC({

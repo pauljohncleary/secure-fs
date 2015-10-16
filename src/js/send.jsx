@@ -7,7 +7,19 @@ var Status = require('./components/status.jsx');
 var SendArea = require('./components/sendFile.jsx');
 
 
-var View = React.createClass({
+var Send = React.createClass({
+
+  componentDidMount() {
+
+    //to get this to work i need to make this a dumb component and register a callback in app.jsx instead
+    connect.dispatch({
+      type: 'NEW_HASH_ID',
+      payload: {
+        hashId: 'test'
+      }
+    });
+
+  },
   render: function() {
     // Injected by connect() call at end of the file
     const { dispatch, status } = this.props;
@@ -20,12 +32,4 @@ var View = React.createClass({
   }
 });
 
-// Which props do we want to inject, given the global state?
-// Note: use https://github.com/faassen/reselect for better performance.
-function select(state) {
-  return {
-    status: state
-  };
-}
-
-module.exports = connect(select)(View);
+module.exports = Send;
