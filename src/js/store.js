@@ -8,14 +8,42 @@ import { devTools, persistState } from 'redux-devtools';
  * It describes how an action transforms the state into the next state.
  */
 
-function reducer(state = false, action) {
+ var defaultState = {
+   connectionStatus: 'Starting up...',
+   route: 'TBC',
+   room: null
+ }
+
+function reducer(state = defaultState, action) {
   switch (action.type) {
   case 'PEERCONNECTIONSTATUS':
     return Object.assign({}, state, {
       connectionStatus: action.status
     });
+  case 'ROUTE_CHANGE':
+    return Object.assign({}, state, {
+      route: route(action.route)
+    });
+  case 'ROOM_CHANGE':
+    return Object.assign({}, state, {
+      room: action.room
+    });
   default:
     return state;
+  }
+}
+
+//route should be the string after the domain
+function route(route) {
+  //check if it is send
+  if(route === 'send') {
+    return 'send';
+  } else if (route === '') {
+    return 'landing';
+  } else if (route.substr(0,7) === 'recieve') {
+    return 'recieve';
+  } else {
+    return 'landing';
   }
 }
 
@@ -30,4 +58,4 @@ const finalCreateStore = compose(
 
 // Create a Redux store holding the state of your app.
 // Its API is { subscribe, dispatch, getState }.
-module.exports = finalCreateStore(reducer);;
+module.exports = finalCreateStore(reducer);

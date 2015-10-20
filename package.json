@@ -27,7 +27,8 @@
     "redux": "^3.0.2",
     "serve-favicon": "~2.3.0",
     "simplewebrtc": "^1.19.1",
-    "socket.io": "0.9.x"
+    "socket.io": "0.9.x",
+    "uuid": "^2.0.1"
   },
   "description": "Secure File Sending",
   "main": "bin/www",

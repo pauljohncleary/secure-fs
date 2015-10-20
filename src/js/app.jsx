@@ -3,6 +3,8 @@ var connect = require('react-redux').connect;
 
 var Send = require('./send.jsx');
 var Recieve = require('./recieve.jsx');
+var Status = require('./components/status.jsx');
+
 
 const App = React.createClass({
   getInitialState() {
@@ -10,6 +12,11 @@ const App = React.createClass({
       route: window.location.pathname.substr(1)
     }
   },
+
+  componentDidMount() {
+    this.props.onRouteChange();
+  },
+
 
   render() {
     let Child;
@@ -22,7 +29,10 @@ const App = React.createClass({
     const { dispatch, status } = this.props;
 
     return (
-      <Child status={status}/>
+      <div>
+        <Status status={status} />
+        <Child />
+      </div>
     )
   }
 });
@@ -31,7 +41,7 @@ const App = React.createClass({
 // Note: use https://github.com/faassen/reselect for better performance.
 function select(state) {
   return {
-    status: state
+    status: state.connectionStatus
   };
 }
 

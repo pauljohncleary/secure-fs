@@ -1,5 +1,6 @@
 /* NEXT STEPS:
 - use react router (or something else) to split into /send and /#hash (recieve) routes
+- get the send page started
 - abstract webrtc stuff into it's own file
 - fix up the UI
 - restrict to max two peers in a room
@@ -11,7 +12,7 @@ global.$ = jquery;
 var simpleWebRTC = require('simplewebrtc');
 
 var React = require('react');
-var Provider = require('react-redux').Provider;
+import { Provider } from 'react-redux';
 import { DevTools, DebugPanel, LogMonitor } from 'redux-devtools/lib/react';
 
 var store = require('./store');
@@ -21,7 +22,13 @@ let rootElement = document.getElementById('remotes');
 React.render(
   <div>
     <Provider store={store}>
-      {() => <App />}
+      {() => <App
+        onRouteChange={ route =>
+          store.dispatch({
+            type: 'ROUTE_CHANGE',
+            route: window.location.pathname.substr(1)
+          })
+        }/>}
     </Provider>
     <DebugPanel top right bottom>
       <DevTools store={store} monitor={LogMonitor} />
