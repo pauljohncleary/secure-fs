@@ -4,6 +4,8 @@ var connect = require('react-redux').connect;
 var Send = require('./send.jsx');
 var Recieve = require('./recieve.jsx');
 var Status = require('./components/status.jsx');
+import { sharedWebRTC } from './lib/webrtc';
+
 
 module.exports = function(store) {
 
@@ -16,6 +18,7 @@ module.exports = function(store) {
 
     componentDidMount() {
       this.props.onRouteChange();
+      sharedWebRTC(store);
     },
 
     render() {

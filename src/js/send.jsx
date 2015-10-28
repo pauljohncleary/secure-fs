@@ -6,7 +6,6 @@ var uuid = require('uuid');
 
 var SendArea = require('./components/sendFile.jsx');
 
-
 var Send = React.createClass({
 
   getDefaultProps(){
@@ -16,7 +15,6 @@ var Send = React.createClass({
     };
   },
   render: function() {
-    //const { dispatch } = this.props;
     return (
       <div>
         <SendArea
@@ -42,4 +40,5 @@ function mapDispatchToProps(dispatch) {
   };
 };
 
+//connect makes it smart
 export default connect(mapStateToProps, mapDispatchToProps)(Send);

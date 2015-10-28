@@ -1,31 +1,47 @@
 var simpleWebRTC = require('simplewebrtc');
 
-//configure webrtc for data transfers
-var webrtc = new simpleWebRTC({
-    localVideoEl: '',
-    remoteVideosEl: '',
-    autoRequestMedia: false,
-    receiveMedia: {
-        mandatory: {
-            offerToReceiveAudio: false,
-            offerToReceiveVideo: false
-        }
-    }
-});
+export function sharedWebRTC(store) {
+
+  //configure webrtc for data transfers
+  var webrtc = new simpleWebRTC({
+      localVideoEl: '',
+      remoteVideosEl: '',
+      autoRequestMedia: false,
+      receiveMedia: {
+          mandatory: {
+              offerToReceiveAudio: false,
+              offerToReceiveVideo: false
+          }
+      }
+  });
+
+  //store.subscribe(() => console.log('peer: ', store.getState()) );
+  webrtc.joinRoom(store.getState().room);
+  store.dispatch({
+    type: 'PEERCONNECTIONSTATUS',
+    status: 'Connecting to other computer...'
+  });
+
+  // called when a peer is created
+  webrtc.on('createdPeer', function (peer) {
+    store.dispatch({
+      type: 'PEERCONNECTIONSTATUS',
+      status: 'Connected to another computer'
+    });
+  });
+
+
+}
 
 //subscribe to the the peer connection status
 //store.subscribe(() => console.log('peer: ', store.getState()) );
-
+/*
 store.dispatch({
   type: 'PEERCONNECTIONSTATUS',
   status: 'Waiting for the other person to connect...'
 });
-
-
-//url will contain the room name, e.g https://senditdirect.com/sadf3r3
-var roomName = window.location.pathname.substr(1);
-webrtc.joinRoom(roomName);
-
+*/
+/*
 // called when a peer is created
 webrtc.on('createdPeer', function (peer) {
   store.dispatch({
@@ -90,3 +106,4 @@ webrtc.on('createdPeer', function (peer) {
   });
 
 });
+*/

@@ -1,6 +1,6 @@
 var React = require('react');
-
-module.exports = React.createClass({
+import { connect } from 'react-redux';
+var Recieve = React.createClass({
 
   componentDidMount() {
 
@@ -15,3 +15,6 @@ module.exports = React.createClass({
     );
   }
 });
+
+//connect makes it smart
+export default connect()(Recieve);
