@@ -38,7 +38,7 @@ module.exports = function(store) {
       return (
         <div>
           <Status status={status} />
-          <Child />
+          <Child dispatch={dispatch}/>
         </div>
       )
     }

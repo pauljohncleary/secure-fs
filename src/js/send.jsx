@@ -15,30 +15,21 @@ var Send = React.createClass({
     };
   },
   render: function() {
+    const { dispatch, status } = this.props;
+
     return (
       <div>
         <SendArea
           roomId = {this.props.roomId}
-          onRoomChange = {this.props.onRoomChange}
+          onRoomChange =  {() => dispatch({
+              type: 'ROOM_CHANGE',
+              room: this.props.roomId
+            })}
         />
       </div>
     );
   }
 });
 
-function mapStateToProps(state) {
-  return {};
-};
-
-
-function mapDispatchToProps(dispatch) {
-  return {
-    onRoomChange: (roomId) => dispatch({
-      type: 'ROOM_CHANGE',
-      room: roomId
-    })
-  };
-};
-
 //connect makes it smart
-export default connect(mapStateToProps, mapDispatchToProps)(Send);
+export default Send;
