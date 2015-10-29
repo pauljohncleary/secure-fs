@@ -1,10 +1,12 @@
 var React = require('react');
-import { connect } from 'react-redux';
 var Recieve = React.createClass({
 
   componentDidMount() {
-
-    //get the hash from the url?
+    let path = window.location.pathname.substr(9);
+    this.props.dispatch({
+        type: 'ROOM_CHANGE',
+        room: path
+      });
     //connect to webrtc
 
   },
@@ -16,5 +18,4 @@ var Recieve = React.createClass({
   }
 });
 
-//connect makes it smart
-export default connect()(Recieve);
+export default Recieve;
