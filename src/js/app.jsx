@@ -4,6 +4,7 @@ var connect = require('react-redux').connect;
 var Send = require('./send.jsx');
 var Recieve = require('./recieve.jsx');
 var Status = require('./components/status.jsx');
+var NotFound = require('./components/404.jsx');
 import { sharedWebRTC } from './lib/webrtc';
 
 
@@ -23,10 +24,13 @@ module.exports = function(store) {
 
     render() {
       let Child;
-      switch (this.state.route) {
-        case 'send': Child = Send; break;
-        case 'recieve': Child = Recieve; break;
-        default:      Child = Send;
+      let regex = /recieve\/.*/;
+      if(regex.exec(this.state.route)) {
+        Child = Recieve;
+      } else if(this.state.route === 'send'){
+        Child = Send;
+      } else {
+        Child = NotFound;
       }
 
       const { dispatch, status } = this.props;
