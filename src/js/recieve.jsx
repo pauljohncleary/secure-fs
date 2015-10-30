@@ -7,8 +7,6 @@ var Recieve = React.createClass({
         type: 'ROOM_CHANGE',
         room: path
       });
-    //connect to webrtc
-
   },
 
   render: function() {

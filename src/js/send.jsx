@@ -7,7 +7,8 @@ var Send = React.createClass({
 
   getDefaultProps(){
     return {
-      roomId: uuid.v4()
+      //roomId: uuid.v4()
+      roomId: 'test'
     };
   },
   render: function() {

@@ -1,6 +1,4 @@
 /* NEXT STEPS:
-- use react router (or something else) to split into /send and /#hash (recieve) routes
-- get the send page started
 - abstract webrtc stuff into it's own file
 - fix up the UI
 - restrict to max two peers in a room
