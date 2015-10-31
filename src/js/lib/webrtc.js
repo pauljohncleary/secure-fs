@@ -1,9 +1,9 @@
 var simpleWebRTC = require('simplewebrtc');
 
-export function sharedWebRTC(store) {
+export function sharedWebRTC() {
 
   //configure webrtc for data transfers
-  var webrtc = new simpleWebRTC({
+  return new simpleWebRTC({
       localVideoEl: '',
       remoteVideosEl: '',
       autoRequestMedia: false,
@@ -14,82 +14,6 @@ export function sharedWebRTC(store) {
           }
       }
   });
-
-  webrtc.joinRoom(store.getState().room);
-
-  store.dispatch({
-    type: 'PEERCONNECTIONSTATUS',
-    status: 'Connecting to other computer...'
-  });
-
-  // called when a peer is created
-  webrtc.on('createdPeer', function (peer) {
-    store.dispatch({
-      type: 'PEERCONNECTIONSTATUS',
-      status: 'Connected to another computer'
-    });
-
-    //subscribe to the store for route changes
-    //load the appropriate logic for the route
-    let currentValue;
-    function handleChange() {
-      let previousValue = currentValue;
-      currentValue = store.getState().route;
-
-      if (previousValue !== currentValue) {
-        if(currentValue === 'send') {
-          setupSendFile(peer);
-        } else if(currentValue === 'recieve') {
-          setupRecieveFile(peer);
-        }
-      }
-    }
-
-    let unsubscribe = store.subscribe(handleChange);
-    handleChange();
-
-    //monitor if the peer has connected or not
-    peer.pc.on('iceConnectionStateChange', function (event) {
-      switch (peer.pc.iceConnectionState) {
-      case 'checking':
-        store.dispatch({
-          type: 'PEERCONNECTIONSTATUS',
-          status: 'Connecting...'
-        });
-        break;
-      case 'connected':
-      case 'completed': // on caller side
-        store.dispatch({
-          type: 'PEERCONNECTIONSTATUS',
-          status: 'Connected'
-        });
-        break;
-      case 'disconnected':
-      case 'failed':
-      case 'closed':
-        store.dispatch({
-          type: 'PEERCONNECTIONSTATUS',
-          status: 'Waiting for the other person to connect...'
-        });
-        break;
-      }
-    });
-  });
-
-  var setupSendFile = function(peer) {
-    // send a file
-    var fileInput = document.getElementById('fileInput');
-    fileInput.addEventListener('change', function() {
-        fileInput.disabled = true;
-        store.dispatch({
-          type: 'PEERCONNECTIONSTATUS',
-          status: 'File uploading...'
-        });
-
-        var file = fileInput.files[0];
-        var sender = peer.sendFile(file);
-    });
-  }
 
   var setupRecieveFile = function(peer) {
     peer.on('fileTransfer', function (metadata, receiver) {

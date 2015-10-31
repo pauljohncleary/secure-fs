@@ -3,23 +3,28 @@ import { compose, createStore, applyMiddleware } from 'redux';
 // Redux DevTools store enhancers
 import { devTools, persistState } from 'redux-devtools';
 
-/**
- * This is a reducer, a pure function with (state, action) => state signature.
- * It describes how an action transforms the state into the next state.
- */
 
  var defaultState = {
    connectionStatus: 'Starting up...',
    route: 'TBC',
-   room: null
+   room: null,
+   peer: {},
+   fileQueue: [],
+   transfersInProgress: [],
+   availableForDownload: [],
+   sentFiles: []
  }
 
 function reducer(state = defaultState, action) {
   switch (action.type) {
-  case 'PEERCONNECTIONSTATUS':
-    return Object.assign({}, state, {
-      connectionStatus: action.status
-    });
+  case 'PEER_CHANGE':
+    return Object.keys(state.peer).length === 0 ? Object.assign({}, state, {
+      peer: action.peer
+    }) : state;
+  case 'PEER_DISCONNECT':
+    return Object.keys(state.peer).length > 0 ? Object.assign({}, state, {
+      peer: {}
+    }) : state;
   case 'ROUTE_CHANGE':
     return Object.assign({}, state, {
       route: route(action.route)
@@ -27,6 +32,10 @@ function reducer(state = defaultState, action) {
   case 'ROOM_CHANGE':
     return Object.assign({}, state, {
       room: action.room
+    });
+  case 'NEW_FILE':
+    return Object.assign({}, state, {
+      fileQueue: state.fileQueue.concat([{'id': action.id, 'name': action.name}])
     });
   default:
     return state;
