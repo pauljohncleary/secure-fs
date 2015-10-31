@@ -17,10 +17,9 @@ var Send = React.createClass({
 
   componentDidUpdate() {
     const { dispatch, peer } = this.props
+    var fileInput = document.getElementById('fileInput');
 
     if(Object.keys(peer).length > 0 ) {
-      console.log(peer);
-      var fileInput = document.getElementById('fileInput');
       fileInput.disabled = false;
       fileInput.addEventListener('change', function() {
         let fileId = uuid.v4();
@@ -50,11 +49,13 @@ var Send = React.createClass({
           });
         });
       });
+    } else {
+      fileInput.disabled = true;
     }
   },
 
   render: function() {
-    const { dispatch, peer, roomId } = this.props
+    const { roomId } = this.props
 
     return (
       <div>

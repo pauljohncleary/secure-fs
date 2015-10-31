@@ -1,5 +1,4 @@
 /* NEXT STEPS:
-- abstract webrtc stuff into it's own file
 - fix up the UI
 - restrict to max two peers in a room
 - encrypt files
