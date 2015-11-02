@@ -12,24 +12,8 @@ var Recieve = React.createClass({
   },
 
   componentDidUpdate() {
-    const { dispatch, peer } = this.props
+    const { dispatch, peerConnectionStatus } = this.props
 
-    if(Object.keys(peer).length > 0 ) {
-      peer.on('fileTransfer', function (metadata, receiver) {
-        console.log('incoming filetransfer', metadata.name, metadata);
-        receiver.on('progress', function (bytesReceived) {
-            console.log('receive progress', bytesReceived, 'out of', metadata.size);
-        });
-        // get notified when file is done
-        receiver.on('receivedFile', function (file, metadata) {
-            console.log('received file', metadata.name, metadata.size);
-
-            // close the channel
-            receiver.channel.close();
-        });
-        //filelist.appendChild(item);
-      });
-    }
   },
 
   render: function() {

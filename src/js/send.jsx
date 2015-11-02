@@ -1,5 +1,6 @@
 var React = require('react');
 var uuid = require('uuid');
+var File = require('./components/file.jsx')
 
 var Send = React.createClass({
   getDefaultProps: function() {
@@ -16,10 +17,11 @@ var Send = React.createClass({
   },
 
   componentDidUpdate() {
-    const { dispatch, peer } = this.props
+    const { dispatch, peerConnectionStatus } = this.props
     var fileInput = document.getElementById('fileInput');
 
-    if(Object.keys(peer).length > 0 ) {
+    if(peerConnectionStatus === 'new') {
+
       fileInput.disabled = false;
       fileInput.addEventListener('change', function() {
         let fileId = uuid.v4();
@@ -31,36 +33,27 @@ var Send = React.createClass({
           name: fileName
         });
 
-        var file = fileInput.files[0];
-        var sender = peer.sendFile(file);
-
-        sender.on('progress', function(bytesSent) {
-          dispatch({
-            type: 'FILE_SENDING',
-            id: fileId,
-            bytes: bytesSent
-          });
-        });
-
-        sender.on('complete', function() {
-          dispatch({
-            type: 'FILE_SEND_COMPLETE',
-            id: fileId,
-          });
-        });
       });
-    } else {
+
+    }  else {
       fileInput.disabled = true;
     }
+
+
   },
 
   render: function() {
     const { roomId } = this.props
-
+    this.props.fileQueue.map(function(file) {
+      console.log(file.name);
+    });
     return (
       <div>
         <h1>ID: {roomId}</h1>
         <input type="file" id="fileInput" disabled="disabled"/>
+        {this.props.fileQueue.map(function(file) {
+          return <File key={file.id} name={file.name}></File>
+        })}
       </div>
     );
   }

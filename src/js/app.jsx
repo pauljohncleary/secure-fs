@@ -19,42 +19,7 @@ module.exports = function(store) {
 
     componentDidMount() {
       this.props.onRouteChange();
-
-      let webrtc = sharedWebRTC();
-      webrtc.joinRoom(store.getState().room);
-      store.dispatch({
-        type: 'PEERCONNECTIONSTATUS',
-        status: 'Connecting to other computer...'
-      });
-      // called when a peer is created
-      webrtc.on('createdPeer', function (peer) {
-        store.dispatch({
-          type: 'PEER_CHANGE',
-          peer: peer
-        })
-
-        //monitor if the peer has connected or not
-        peer.pc.on('iceConnectionStateChange', function (event) {
-          switch (peer.pc.iceConnectionState) {
-          case 'checking':
-          case 'connected':
-          case 'completed': // on caller side
-            store.dispatch({
-              type: 'PEER_CHANGE',
-              peer: peer
-            });
-            break;
-          case 'disconnected':
-          case 'failed':
-          case 'closed':
-            store.dispatch({
-              type: 'PEER_DISCONNECT'
-            });
-            break;
-          }
-        });
-      });
-
+      sharedWebRTC(store);
     },
 
     render() {
@@ -68,12 +33,12 @@ module.exports = function(store) {
         Child = NotFound;
       }
 
-      const { dispatch, peerConnectionStatus, peer} = this.props;
+      const { dispatch, peerConnectionStatus, fileQueue} = this.props;
 
       return (
         <div>
-          <Status peerConnectionStatus={peerConnectionStatus}/>
-          <Child dispatch={dispatch} peer={peer}/>
+          <Status peerConnectionStatus={peerConnectionStatus} />
+          <Child dispatch={dispatch} peerConnectionStatus={peerConnectionStatus} fileQueue={fileQueue}/>
         </div>
       )
     }
@@ -83,8 +48,8 @@ module.exports = function(store) {
   // Note: use https://github.com/faassen/reselect for better performance.
   function mapStateToProps(state) {
     return {
-      peerConnectionStatus: (typeof state.peer.pc === 'undefined' ? 'Connecting...' : state.peer.pc.iceConnectionState ),
-      peer: state.peer
+      peerConnectionStatus: state.peerStatus,
+      fileQueue: state.fileQueue
     };
   }
 

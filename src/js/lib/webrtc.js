@@ -1,9 +1,9 @@
 var simpleWebRTC = require('simplewebrtc');
 
-export function sharedWebRTC() {
+export function sharedWebRTC(store) {
 
   //configure webrtc for data transfers
-  return new simpleWebRTC({
+  var webrtc =  new simpleWebRTC({
       localVideoEl: '',
       remoteVideosEl: '',
       autoRequestMedia: false,
@@ -13,5 +13,71 @@ export function sharedWebRTC() {
               offerToReceiveVideo: false
           }
       }
+  })
+
+  webrtc.joinRoom(store.getState().room);
+
+  // called when a peer is created
+  webrtc.on('createdPeer', function (peer) {
+
+    store.dispatch({
+      type: 'PEER_CHANGE',
+      peerStatus: peer.pc.iceConnectionState
+    });
+
+    /*
+    var sender = peer.sendFile(file);
+
+    sender.on('progress', function(bytesSent) {
+      dispatch({
+        type: 'FILE_SENDING',
+        id: fileId,
+        bytes: bytesSent
+      });
+    });
+
+    sender.on('complete', function() {
+      dispatch({
+        type: 'FILE_SEND_COMPLETE',
+        id: fileId,
+      });
+    });
+    */
+
+    peer.on('fileTransfer', function (metadata, receiver) {
+      console.log('incoming filetransfer', metadata.name, metadata);
+      receiver.on('progress', function (bytesReceived) {
+          console.log('receive progress', bytesReceived, 'out of', metadata.size);
+      });
+      // get notified when file is done
+      receiver.on('receivedFile', function (file, metadata) {
+          console.log('received file', metadata.name, metadata.size);
+
+          // close the channel
+          receiver.channel.close();
+      });
+      //filelist.appendChild(item);
+    });
+
+    //monitor if the peer has connected or not
+    peer.pc.on('iceConnectionStateChange', function (event) {
+      switch (peer.pc.iceConnectionState) {
+      case 'checking':
+      case 'connected':
+      case 'completed': // on caller side
+        store.dispatch({
+          type: 'PEER_CHANGE',
+          peerStatus: peer.pc.iceConnectionState
+        });
+        break;
+      case 'disconnected':
+      case 'failed':
+      case 'closed':
+        store.dispatch({
+          type: 'PEER_DISCONNECT'
+        });
+        break;
+      }
+    });
   });
-}
+};

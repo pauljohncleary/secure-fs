@@ -5,10 +5,9 @@ import { devTools, persistState } from 'redux-devtools';
 
 
  var defaultState = {
-   connectionStatus: 'Starting up...',
    route: 'TBC',
    room: null,
-   peer: {},
+   peerStatus: 'Connecting...',
    fileQueue: [],
    transfersInProgress: [],
    availableForDownload: [],
@@ -18,13 +17,13 @@ import { devTools, persistState } from 'redux-devtools';
 function reducer(state = defaultState, action) {
   switch (action.type) {
   case 'PEER_CHANGE':
-    return Object.keys(state.peer).length === 0 ? Object.assign({}, state, {
-      peer: action.peer
-    }) : state;
+    return Object.assign({}, state, {
+      peerStatus: action.peerStatus
+    });
   case 'PEER_DISCONNECT':
-    return Object.keys(state.peer).length > 0 ? Object.assign({}, state, {
-      peer: {}
-    }) : state;
+    return Object.assign({}, state, {
+      peerStatus: 'Connecting...'
+    });
   case 'ROUTE_CHANGE':
     return Object.assign({}, state, {
       route: route(action.route)
@@ -35,8 +34,9 @@ function reducer(state = defaultState, action) {
     });
   case 'NEW_FILE':
     return Object.assign({}, state, {
-      fileQueue: state.fileQueue.concat([{'id': action.id, 'name': action.name}])
+      fileQueue: state.fileQueue.concat([{'id': action.id, 'name': action.name, file: action.file}])
     });
+
   default:
     return state;
   }
