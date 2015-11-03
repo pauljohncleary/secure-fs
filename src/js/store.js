@@ -9,7 +9,7 @@ import { devTools, persistState } from 'redux-devtools';
    room: null,
    peerStatus: 'Connecting...',
    fileQueue: [],
-   transfersInProgress: [],
+   transfers: [],
    availableForDownload: [],
    sentFiles: []
  }
@@ -34,7 +34,22 @@ function reducer(state = defaultState, action) {
     });
   case 'NEW_FILE':
     return Object.assign({}, state, {
-      fileQueue: state.fileQueue.concat([{'id': action.id, 'name': action.name, file: action.file}])
+      fileQueue: state.fileQueue.concat([{'id': action.id, file: action.file}])
+    });
+  case 'SEND_FILE':
+    //REMOVE THE FILE FROM THE FILE QUEUE and MOVE IT TO THE transfers
+    let fileQueue = state.fileQueue;
+    let transfers = state.transfers;
+    let fileIndex = fileQueue.findIndex((element) => {
+      return element.id === action.id
+    });
+
+    let file = fileQueue.splice(fileIndex)[0];
+    transfers.push(file);
+
+    return Object.assign({}, state, {
+      fileQueue: fileQueue,
+      transfers: transfers
     });
 
   default:

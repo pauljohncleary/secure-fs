@@ -25,23 +25,47 @@ export function sharedWebRTC(store) {
       peerStatus: peer.pc.iceConnectionState
     });
 
+    function select(state) {
+      return state.transfers.length
+    }
+
+    let numberOfCurrentTransfers;
+    function monitorFileQueue() {
+      let oldTransfers = numberOfCurrentTransfers;
+      numberOfCurrentTransfers = select(store.getState());
+
+      if (oldTransfers < numberOfCurrentTransfers) {
+
+        let transfers = store.getState().transfers;
+        var file = document.getElementById('fileInput').files[0];
+
+
+        var sender = peer.sendFile(file);
+        //FILE IS NULL!!! AHHHHHHHHHHHHHH
+        console.log(sender);
+
+        sender.on('progress', function(bytesSent) {
+          dispatch({
+            type: 'FILE_SENDING',
+            id: fileId,
+            bytes: bytesSent
+          });
+        });
+
+        sender.on('complete', function() {
+          dispatch({
+            type: 'FILE_SEND_COMPLETE',
+            id: fileId,
+          });
+        });
+      }
+    }
+
+    let unsubscribe = store.subscribe(monitorFileQueue)
+    monitorFileQueue()
+
     /*
-    var sender = peer.sendFile(file);
 
-    sender.on('progress', function(bytesSent) {
-      dispatch({
-        type: 'FILE_SENDING',
-        id: fileId,
-        bytes: bytesSent
-      });
-    });
-
-    sender.on('complete', function() {
-      dispatch({
-        type: 'FILE_SEND_COMPLETE',
-        id: fileId,
-      });
-    });
     */
 
     peer.on('fileTransfer', function (metadata, receiver) {

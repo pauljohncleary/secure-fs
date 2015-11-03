@@ -16,43 +16,33 @@ var Send = React.createClass({
       });
   },
 
-  componentDidUpdate() {
+  componentDidMount() {
     const { dispatch, peerConnectionStatus } = this.props
     var fileInput = document.getElementById('fileInput');
 
-    if(peerConnectionStatus === 'new') {
-
-      fileInput.disabled = false;
-      fileInput.addEventListener('change', function() {
+    fileInput.addEventListener('change', function() {
+      if(fileInput.files[0]) {
         let fileId = uuid.v4();
-        let fileName = fileInput.files[0].name;
-
+        let file = fileInput.files[0];
         dispatch({
           type: 'NEW_FILE',
           id: fileId,
-          name: fileName
+          file: file
         });
-
-      });
-
-    }  else {
-      fileInput.disabled = true;
-    }
-
-
+        //fileInput.value = null;
+      }
+    });
   },
 
   render: function() {
-    const { roomId } = this.props
-    this.props.fileQueue.map(function(file) {
-      console.log(file.name);
-    });
+    const { roomId, dispatch } = this.props
+
     return (
       <div>
         <h1>ID: {roomId}</h1>
-        <input type="file" id="fileInput" disabled="disabled"/>
+        <input type="file" id="fileInput" />
         {this.props.fileQueue.map(function(file) {
-          return <File key={file.id} name={file.name}></File>
+          return <File key={file.id} id={file.id} name={file.file.name} dispatch={dispatch}></File>
         })}
       </div>
     );
