@@ -7,10 +7,11 @@ export function sharedWebRTC(store) {
       localVideoEl: '',
       remoteVideosEl: '',
       autoRequestMedia: false,
+      //url: 'http://localhost:8888',
       receiveMedia: {
           mandatory: {
-              offerToReceiveAudio: false,
-              offerToReceiveVideo: false
+              OfferToReceiveAudio: false,
+              OfferToReceiveVideo: false
           }
       }
   })
@@ -37,36 +38,28 @@ export function sharedWebRTC(store) {
       if (oldTransfers < numberOfCurrentTransfers) {
 
         let transfers = store.getState().transfers;
-        var file = document.getElementById('fileInput').files[0];
-
-
+        var file = transfers[0];
         var sender = peer.sendFile(file);
-        //FILE IS NULL!!! AHHHHHHHHHHHHHH
-        console.log(sender);
 
         sender.on('progress', function(bytesSent) {
-          dispatch({
+          store.dispatch({
             type: 'FILE_SENDING',
-            id: fileId,
-            bytes: bytesSent
+            id: file.id,
+            bytesSent: bytesSent
           });
         });
 
         sender.on('complete', function() {
-          dispatch({
-            type: 'FILE_SEND_COMPLETE',
-            id: fileId,
+          store.dispatch({
+            type: 'FILE_SENT',
+            id: file.id
           });
         });
       }
     }
 
-    let unsubscribe = store.subscribe(monitorFileQueue)
-    monitorFileQueue()
-
-    /*
-
-    */
+    let unsubscribe = store.subscribe(monitorFileQueue);
+    monitorFileQueue();
 
     peer.on('fileTransfer', function (metadata, receiver) {
       console.log('incoming filetransfer', metadata.name, metadata);

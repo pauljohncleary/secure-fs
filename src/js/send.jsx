@@ -29,7 +29,7 @@ var Send = React.createClass({
           id: fileId,
           file: file
         });
-        //fileInput.value = null;
+        fileInput.value = null;
       }
     });
   },

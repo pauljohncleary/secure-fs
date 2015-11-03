@@ -37,7 +37,6 @@ function reducer(state = defaultState, action) {
       fileQueue: state.fileQueue.concat([{'id': action.id, file: action.file}])
     });
   case 'SEND_FILE':
-    //REMOVE THE FILE FROM THE FILE QUEUE and MOVE IT TO THE transfers
     let fileQueue = state.fileQueue;
     let transfers = state.transfers;
     let fileIndex = fileQueue.findIndex((element) => {
@@ -51,10 +50,38 @@ function reducer(state = defaultState, action) {
       fileQueue: fileQueue,
       transfers: transfers
     });
+  case 'FILE_SENDING':
+    let currentTransfers = state.transfers;
 
+    let index = currentTransfers.findIndex((element) => {
+      return element.id === action.id
+    });
+
+    let updatedFile = currentTransfers.splice(index)[0];
+    file.bytesSent = action.bytesSent;
+    currentTransfers.push(updatedFile);
+
+    return Object.assign({}, state, {
+      transfers: currentTransfers
+    });
+  case 'FILE_SENT':
+    let transfers2 = state.transfers;
+    let sentFiles2 = state.sentFiles;
+    let fileIndex2 = transfers2.findIndex((element) => {
+      return element.id === action.id
+    });
+
+    let file2 = transfers2.splice(fileIndex)[0];
+    sentFiles2.push(file2);
+
+    return Object.assign({}, state, {
+      sentFiles: sentFiles2,
+      transfers: transfers2
+    });
   default:
     return state;
   }
+
 }
 
 //route should be the string after the domain
