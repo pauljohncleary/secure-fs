@@ -29,7 +29,7 @@ export function sharedWebRTC(store) {
 
     //handle sending files
     function select(state) {
-      return state.transfers.length
+      return state.outgoingTransfers.length
     }
 
     let numberOfCurrentTransfers;
@@ -39,9 +39,9 @@ export function sharedWebRTC(store) {
 
       if (oldTransfers < numberOfCurrentTransfers) {
 
-        let transfers = store.getState().transfers;
+        let transfers = store.getState().outgoingTransfers.slice(0);
         var file = transfers[0];
-        var sender = peer.sendFile(file);
+        var sender = peer.sendFile(file.file);
 
         sender.on('progress', function(bytesSent) {
           store.dispatch({
@@ -65,22 +65,23 @@ export function sharedWebRTC(store) {
 
     //handle receiving files
     peer.on('fileTransfer', function (metadata, receiver) {
+      let fileTransferId = uuid.v4();
       store.dispatch({
         type: 'NEW_INCOMING_FILE',
-        id: uuid.v4(),
+        id: fileTransferId,
         metadata: metadata
       });
       receiver.on('progress', function (bytesReceived) {
         store.dispatch({
           type: 'FILE_DOWNLOADING',
-          id: file.id,
-          bytesReceived: bytesSent
+          id: fileTransferId,
+          bytesReceived: bytesReceived
         });
       });
       receiver.on('receivedFile', function (file, metadata) {
         store.dispatch({
           type: 'FILE_RECIEVED',
-          id: file.id
+          id: fileTransferId
         });
         receiver.channel.close();
       });

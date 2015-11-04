@@ -9,7 +9,8 @@ import { devTools, persistState } from 'redux-devtools';
    room: null,
    peerStatus: 'Connecting...',
    fileQueue: [],
-   transfers: [],
+   outgoingTransfers: [],
+   incomingTransfers: [],
    availableForDownload: [],
    sentFiles: []
  }
@@ -37,29 +38,29 @@ function reducer(state = defaultState, action) {
       fileQueue: state.fileQueue.concat([{'id': action.id, file: action.file}])
     });
   case 'SEND_FILE':
-    let newArrays = moveFileAlong(state.fileQueue, state.transfers, action.id);
+    let newArrays = moveFileAlong(state.fileQueue, state.outgoingTransfers, action.id);
     return Object.assign({}, state, {
       fileQueue: newArrays.from,
-      transfers: newArrays.to
+      outgoingTransfers: newArrays.to
     });
   case 'FILE_SENDING':
-    let currentTransfers = state.transfers.slice(0);
+    let currentOutgoingTransfers = state.outgoingTransfers.slice(0);
 
-    let index = currentTransfers.findIndex((element) => {
+    let index = currentOutgoingTransfers.findIndex((element) => {
       return element.id === action.id
     });
 
-    let updatedFile = currentTransfers.splice(index)[0];
-    file.bytesSent = action.bytesSent;
-    currentTransfers.push(updatedFile);
+    let updatedFile = currentOutgoingTransfers.splice(index)[0];
+    updatedFile.bytesSent = action.bytesSent;  
+    currentOutgoingTransfers.push(updatedFile);
 
     return Object.assign({}, state, {
-      transfers: currentTransfers
+      outgoingTransfers: currentOutgoingTransfers
     });
   case 'FILE_SENT':
-    let updatedArrays = moveFileAlong(state.transfers, state.sentFiles, action.id);
+    let updatedArrays = moveFileAlong(state.outgoingTransfers, state.sentFiles, action.id);
     return Object.assign({}, state, {
-      transfers: updatedArrays.from,
+      outgoingTransfers: updatedArrays.from,
       sentFiles: updatedArrays.to
     });
   default:
