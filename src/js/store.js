@@ -37,21 +37,13 @@ function reducer(state = defaultState, action) {
       fileQueue: state.fileQueue.concat([{'id': action.id, file: action.file}])
     });
   case 'SEND_FILE':
-    let fileQueue = state.fileQueue;
-    let transfers = state.transfers;
-    let fileIndex = fileQueue.findIndex((element) => {
-      return element.id === action.id
-    });
-
-    let file = fileQueue.splice(fileIndex)[0];
-    transfers.push(file);
-
+    let newArrays = moveFileAlong(state.fileQueue, state.transfers, action.id);
     return Object.assign({}, state, {
-      fileQueue: fileQueue,
-      transfers: transfers
+      fileQueue: newArrays.from,
+      transfers: newArrays.to
     });
   case 'FILE_SENDING':
-    let currentTransfers = state.transfers;
+    let currentTransfers = state.transfers.slice(0);
 
     let index = currentTransfers.findIndex((element) => {
       return element.id === action.id
@@ -65,23 +57,30 @@ function reducer(state = defaultState, action) {
       transfers: currentTransfers
     });
   case 'FILE_SENT':
-    let transfers2 = state.transfers;
-    let sentFiles2 = state.sentFiles;
-    let fileIndex2 = transfers2.findIndex((element) => {
-      return element.id === action.id
-    });
-
-    let file2 = transfers2.splice(fileIndex)[0];
-    sentFiles2.push(file2);
-
+    let updatedArrays = moveFileAlong(state.transfers, state.sentFiles, action.id);
     return Object.assign({}, state, {
-      sentFiles: sentFiles2,
-      transfers: transfers2
+      transfers: updatedArrays.from,
+      sentFiles: updatedArrays.to
     });
   default:
     return state;
   }
 
+}
+
+//extract a file from an array by id and add it to another array
+function moveFileAlong(fromArray, toArray, id) {
+  let from = fromArray.slice(0);
+  let to = toArray.slice(0);
+  let fileIndex = from.findIndex((element) => {
+    return element.id === id
+  });
+  let file = from.splice(fileIndex)[0];
+  to.push(file);
+  return {
+    from: from,
+    to: to
+  }
 }
 
 //route should be the string after the domain

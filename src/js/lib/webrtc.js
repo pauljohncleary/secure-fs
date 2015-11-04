@@ -1,4 +1,5 @@
 var simpleWebRTC = require('simplewebrtc');
+var uuid = require('uuid');
 
 export function sharedWebRTC(store) {
 
@@ -26,6 +27,7 @@ export function sharedWebRTC(store) {
       peerStatus: peer.pc.iceConnectionState
     });
 
+    //handle sending files
     function select(state) {
       return state.transfers.length
     }
@@ -61,19 +63,27 @@ export function sharedWebRTC(store) {
     let unsubscribe = store.subscribe(monitorFileQueue);
     monitorFileQueue();
 
+    //handle receiving files
     peer.on('fileTransfer', function (metadata, receiver) {
-      console.log('incoming filetransfer', metadata.name, metadata);
+      store.dispatch({
+        type: 'NEW_INCOMING_FILE',
+        id: uuid.v4(),
+        metadata: metadata
+      });
       receiver.on('progress', function (bytesReceived) {
-          console.log('receive progress', bytesReceived, 'out of', metadata.size);
+        store.dispatch({
+          type: 'FILE_DOWNLOADING',
+          id: file.id,
+          bytesReceived: bytesSent
+        });
       });
-      // get notified when file is done
       receiver.on('receivedFile', function (file, metadata) {
-          console.log('received file', metadata.name, metadata.size);
-
-          // close the channel
-          receiver.channel.close();
+        store.dispatch({
+          type: 'FILE_RECIEVED',
+          id: file.id
+        });
+        receiver.channel.close();
       });
-      //filelist.appendChild(item);
     });
 
     //monitor if the peer has connected or not
