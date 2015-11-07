@@ -33,12 +33,20 @@ module.exports = function(store) {
         Child = NotFound;
       }
 
-      const { dispatch, peerConnectionStatus, fileQueue} = this.props;
+      const { dispatch, peerConnectionStatus, fileQueue, outgoingTransfers, sentFiles, availableForDownload, incomingTransfers } = this.props;
 
       return (
         <div>
           <Status peerConnectionStatus={peerConnectionStatus} />
-          <Child dispatch={dispatch} peerConnectionStatus={peerConnectionStatus} fileQueue={fileQueue}/>
+          <Child
+            dispatch={dispatch}
+            peerConnectionStatus={peerConnectionStatus}
+            fileQueue={fileQueue}
+            outgoingTransfers={outgoingTransfers}
+            sentFiles={sentFiles}
+            availableForDownload={availableForDownload}
+            incomingTransfers={incomingTransfers}
+          />
         </div>
       )
     }
@@ -49,7 +57,11 @@ module.exports = function(store) {
   function mapStateToProps(state) {
     return {
       peerConnectionStatus: state.peerStatus,
-      fileQueue: state.fileQueue
+      fileQueue: state.fileQueue,
+      outgoingTransfers: state.outgoingTransfers,
+      sentFiles: state.sentFiles,
+      availableForDownload: state.availableForDownload,
+      incomingTransfers: state.incomingTransfers
     };
   }
 

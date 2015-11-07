@@ -1,6 +1,7 @@
 /* NEXT STEPS:
-- fix up the UI
+- fix up the UI / handle receiving and downloading
 - restrict to max two peers in a room
+- stream files from browser to hdd space somehow?
 - encrypt files
 */
 

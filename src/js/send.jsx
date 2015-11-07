@@ -41,7 +41,16 @@ var Send = React.createClass({
       <div>
         <h1>ID: {roomId}</h1>
         <input type="file" id="fileInput" />
+        <h2>Files to send</h2>
         {this.props.fileQueue.map(function(file) {
+          return <File key={file.id} id={file.id} name={file.file.name} dispatch={dispatch}></File>
+        })}
+        <h2>Outgoing Transfers</h2>
+        {this.props.outgoingTransfers.map(function(file) {
+          return <File key={file.id} id={file.id} name={file.file.name} dispatch={dispatch}></File>
+        })}
+        <h2>Sent Files</h2>
+        {this.props.sentFiles.map(function(file) {
           return <File key={file.id} id={file.id} name={file.file.name} dispatch={dispatch}></File>
         })}
       </div>

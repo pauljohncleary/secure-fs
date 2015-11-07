@@ -1,4 +1,7 @@
 var React = require('react');
+var DownloadedFile = require('./components/downloadedFile.jsx')
+var IncomingFile = require('./components/incomingFile.jsx')
+
 var Recieve = React.createClass({
 
   componentWillMount() {
@@ -11,14 +14,21 @@ var Recieve = React.createClass({
       });
   },
 
-  componentDidUpdate() {
-    const { dispatch, peerConnectionStatus } = this.props
-
-  },
-
   render: function() {
+    const { incomingTransfers, availableForDownload } = this.props;
+    console.log(incomingTransfers);
+
     return (
-      <h2>recieve page</h2>
+      <div>
+        <h2>Incoming Files</h2>
+        {incomingTransfers.map(function(file) {
+          return <IncomingFile key={file.id} bytesReceived={file.bytesReceived} name={file.file.name} ></IncomingFile>
+        })}
+        <h2>Downloaded Files</h2>
+        {availableForDownload.map(function(file) {
+          return <DownloadedFile key={file.id} id={file.id} name={file.file.name}></DownloadedFile>
+        })}
+      </div>
     );
   }
 });

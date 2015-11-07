@@ -44,18 +44,10 @@ function reducer(state = defaultState, action) {
       outgoingTransfers: newArrays.to
     });
   case 'FILE_SENDING':
-    let currentOutgoingTransfers = state.outgoingTransfers.slice(0);
-
-    let index = currentOutgoingTransfers.findIndex((element) => {
-      return element.id === action.id
-    });
-
-    let updatedFile = currentOutgoingTransfers.splice(index)[0];
-    updatedFile.bytesSent = action.bytesSent;  
-    currentOutgoingTransfers.push(updatedFile);
-
     return Object.assign({}, state, {
-      outgoingTransfers: currentOutgoingTransfers
+      outgoingTransfers: updateArrayItem(state.outgoingTransfers, action.id, {
+        bytesSent: action.bytesSent
+      })
     });
   case 'FILE_SENT':
     let updatedArrays = moveFileAlong(state.outgoingTransfers, state.sentFiles, action.id);
@@ -63,11 +55,41 @@ function reducer(state = defaultState, action) {
       outgoingTransfers: updatedArrays.from,
       sentFiles: updatedArrays.to
     });
+  case 'NEW_INCOMING_FILE':
+    return Object.assign({}, state, {
+      incomingTransfers: state.incomingTransfers.concat([{'id': action.id, file: action.metadata}])
+    });
+  case 'FILE_DOWNLOADING':
+    return Object.assign({}, state, {
+      incomingTransfers: updateArrayItem(state.incomingTransfers, action.id, {
+        bytesReceived: action.bytesReceived
+      })
+    });
+  case 'FILE_RECIEVED':
+    let changedArrays = moveFileAlong(state.incomingTransfers, state.availableForDownload, action.id);
+    return Object.assign({}, state, {
+      incomingTransfers: changedArrays.from,
+      availableForDownload: changedArrays.to
+    });
   default:
     return state;
   }
 
 }
+
+//takes an array from the state, copies it and updates it based on the update object passed to it
+//the update object must be an object with a singple property
+function updateArrayItem(arr, id, update) {
+  let arrCopy = arr.slice(0);
+  let index = arrCopy.findIndex((element) => {
+    return element.id === id
+  });
+  let updatedFile = arrCopy.splice(index)[0];
+  let key = Object.keys(update)[0];
+  updatedFile[key] = update[key];
+  arrCopy.push(updatedFile);
+  return arrCopy;
+};
 
 //extract a file from an array by id and add it to another array
 function moveFileAlong(fromArray, toArray, id) {
